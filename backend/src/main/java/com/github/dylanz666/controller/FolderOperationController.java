@@ -199,28 +199,4 @@ public class FolderOperationController {
         }
         folder.delete();
     }
-
-    @GetMapping("/space")
-    public FolderOperationResponse getSpaceInfo() {
-        File folder = new File(rootDir, "3");
-
-        FolderOperationResponse folderOperationResponse = new FolderOperationResponse();
-        try {
-            long free = folder.getFreeSpace();
-            long total = folder.getTotalSpace();
-            String freeString = (free / 1024 / 1024 / 1024) + "G";
-            String totalString = (total / 1024 / 1024 / 1024) + "G";
-
-            String message = freeString + "/" + totalString;
-
-            folderOperationResponse.setStatus(APIStatus.SUCCESS.toString());
-            folderOperationResponse.setMessage(message);
-            return folderOperationResponse;
-        } catch (Exception e) {
-            e.printStackTrace();
-            folderOperationResponse.setStatus(APIStatus.FAIL.toString());
-            folderOperationResponse.setMessage(e.getMessage());
-        }
-        return folderOperationResponse;
-    }
 }
