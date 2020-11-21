@@ -49,7 +49,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         //第二个用户，单角色
         User secondUser = new User();
         secondUser.setUsername("randyh");
-        secondUser.setPassword(passwordEncoder.encode("456"));
+        secondUser.setPassword(passwordEncoder.encode("123"));
         JSONArray secondUserRoles = new JSONArray();
         secondUserRoles.add("ROLE_" + UserRoleEnum.USER.toString());
         secondUser.setUserRoles(secondUserRoles);

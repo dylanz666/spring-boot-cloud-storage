@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
  * @since : 10/04/2020
  */
 @RestController
+@RequestMapping("/api")
 public class PingController {
     @GetMapping("/ping")
     public String ping() {

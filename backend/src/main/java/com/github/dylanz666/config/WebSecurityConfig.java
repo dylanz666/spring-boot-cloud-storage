@@ -26,7 +26,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsUtils;
 
 import javax.servlet.http.HttpServletResponse;
@@ -169,20 +168,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         UserDetails dylanz =
                 User.withUsername("dylanz")
-                        .password(bCryptPasswordEncoder.encode("666"))
+                        .password(bCryptPasswordEncoder.encode("123"))
                         .roles(UserRoleEnum.ADMIN.toString())
                         .build();
         UserDetails ritay =
                 User.withUsername("ritay")
-                        .password(bCryptPasswordEncoder.encode("888"))
+                        .password(bCryptPasswordEncoder.encode("123"))
                         .roles(UserRoleEnum.USER.toString())
                         .build();
-        UserDetails jonathanw =
-                User.withUsername("jonathanw")
-                        .password(bCryptPasswordEncoder.encode("999"))
-                        .roles(UserRoleEnum.USER.toString())
-                        .build();
-        return new InMemoryUserDetailsManager(dylanz, ritay, jonathanw);
+        return new InMemoryUserDetailsManager(dylanz, ritay);
     }
 
     @Bean

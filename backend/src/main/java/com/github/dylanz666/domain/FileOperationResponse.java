@@ -15,11 +15,12 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Data
 @Component
-public class FileOperationMessage implements Serializable {
+public class FileOperationResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String status;
     private String message;
+    private String folderName;
     private String fileName;
 
     @Override
@@ -27,6 +28,7 @@ public class FileOperationMessage implements Serializable {
         return "{" +
                 "\"status\":" + status + "," +
                 "\"message\":\"" + message + "\"," +
+                "\"folderName\":\"" + folderName + "\"," +
                 "\"fileName\":" + fileName + "" +
                 "}";
     }
