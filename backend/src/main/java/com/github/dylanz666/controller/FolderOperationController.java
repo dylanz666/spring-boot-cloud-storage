@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * @author : dylanz
@@ -20,6 +21,11 @@ public class FolderOperationController {
     @Value(value = "${file.root.dir}")
     private String rootDir;
 
+    /**
+     * 创建文件夹
+     *
+     * @param folderName:文件夹名
+     */
     @PostMapping("")
     public FolderOperationResponse createFolder(@RequestParam String folderName) {
         FolderOperationResponse folderOperationResponse = new FolderOperationResponse();
@@ -44,6 +50,12 @@ public class FolderOperationController {
         return folderOperationResponse;
     }
 
+    /**
+     * 删除文件夹
+     *
+     * @param folderName 文件夹名
+     * @param all        是否递归删除文件夹下文件
+     */
     @DeleteMapping("")
     public FolderOperationResponse deleteFolder(@RequestParam String folderName, @RequestParam String all) {
         FolderOperationResponse folderOperationResponse = new FolderOperationResponse();
@@ -64,7 +76,18 @@ public class FolderOperationController {
             }
             if (all.equalsIgnoreCase("Y") || all.equalsIgnoreCase("yes") || all.equalsIgnoreCase("true")) {
                 deleteFolder(rootDir + "\\" + folderName);
+                folderOperationResponse.setStatus(APIStatus.SUCCESS.toString());
+                folderOperationResponse.setMessage(APIStatus.SUCCESS.toString());
+                folderOperationResponse.setFolderName(folderName);
+                return folderOperationResponse;
             }
+            if (Objects.requireNonNull(folder.listFiles()).length > 0) {
+                folderOperationResponse.setStatus(APIStatus.FAIL.toString());
+                folderOperationResponse.setMessage("This is not a empty folder, if you still want to delete it, please pass a parameter: all, and it's value to be Y or Yes.");
+                folderOperationResponse.setFolderName(folderName);
+                return folderOperationResponse;
+            }
+            folder.delete();
 
             folderOperationResponse.setStatus(APIStatus.SUCCESS.toString());
             folderOperationResponse.setMessage(APIStatus.SUCCESS.toString());
@@ -78,6 +101,11 @@ public class FolderOperationController {
         return folderOperationResponse;
     }
 
+    /**
+     * 更新除文件夹名字
+     *
+     * @param folderInformation 文件夹信息
+     */
     @PutMapping("")
     public FolderOperationResponse updateFolder(@RequestBody FolderInformation folderInformation) {
         FolderOperationResponse folderOperationResponse = new FolderOperationResponse();
@@ -113,6 +141,11 @@ public class FolderOperationController {
         return folderOperationResponse;
     }
 
+    /**
+     * 验证文件夹是否存在
+     *
+     * @param folderName 文件夹名
+     */
     @GetMapping("")
     public FolderOperationResponse getFolder(@RequestParam String folderName) {
         FolderOperationResponse folderOperationResponse = new FolderOperationResponse();
@@ -142,6 +175,12 @@ public class FolderOperationController {
         return folderOperationResponse;
     }
 
+    /**
+     * 获取文件夹下的内容
+     *
+     * @param folderName 文件夹名
+     * @param all 是否包含所有内容，是则获取包含文件夹的所有内容，否则只获取文件
+     */
     @GetMapping("/children")
     public FolderOperationResponse getFiles(@RequestParam String folderName, @RequestParam String all) {
         FolderOperationResponse folderOperationResponse = new FolderOperationResponse();

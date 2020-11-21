@@ -19,6 +19,9 @@ public class SpaceController {
     @Value(value = "${file.root.dir}")
     private String rootDir;
 
+    /**
+     * 获取文件系统容量信息
+     */
     @GetMapping("")
     public FolderOperationResponse getSpaceInfo() {
         File folder = new File(rootDir);

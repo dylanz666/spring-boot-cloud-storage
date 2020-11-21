@@ -19,6 +19,9 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/api")
 public class AuthController {
+    /**
+     * 验证用户是否已登录
+     * */
     @GetMapping("/auth")
     public SignInResponse getAuth() {
         Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();

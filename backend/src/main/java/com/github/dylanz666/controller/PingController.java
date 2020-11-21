@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 public class PingController {
+    /**
+     * 验证服务是否正常
+     * */
     @GetMapping("/ping")
     public String ping() {
         return "success";

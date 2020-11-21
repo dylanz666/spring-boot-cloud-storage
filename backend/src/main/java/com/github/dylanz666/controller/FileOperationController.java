@@ -33,6 +33,9 @@ public class FileOperationController {
 
     /**
      * 向系统增加文件(上传)
+     *
+     * @param folderName 上传目标子文件夹
+     * @param file       上传的文件
      */
     @PostMapping("")
     public FileOperationResponse upload(@RequestParam String folderName, @RequestParam("file") MultipartFile file) {
@@ -43,7 +46,7 @@ public class FileOperationController {
             File dest = new File(rootDir, folderName + "\\" + fileName);
 
             //当文件父文件夹不存在，则创建该文件夹
-            if(!dest.getParentFile().exists()){
+            if (!dest.getParentFile().exists()) {
                 dest.getParentFile().mkdir();
             }
 
@@ -65,6 +68,9 @@ public class FileOperationController {
 
     /**
      * 批量向系统增加文件(上传)
+     *
+     * @param folderName 上传目标子文件夹
+     * @param files      上传的文件们，调用API时，form-data中可传多个file名字的文件
      */
     @PostMapping("/batch")
     public FileOperationResponse uploadFiles(@RequestParam String folderName, @RequestParam("file") List<MultipartFile> files) {
@@ -78,7 +84,7 @@ public class FileOperationController {
             try {
                 File dest = new File(rootDir, folderName + "\\" + fileName);
                 //当文件父文件夹不存在，则创建该文件夹
-                if(!dest.getParentFile().exists()){
+                if (!dest.getParentFile().exists()) {
                     dest.getParentFile().mkdir();
                 }
 
@@ -101,6 +107,9 @@ public class FileOperationController {
 
     /**
      * 删除系统中的文件
+     *
+     * @param folderName 要删除的文件的目标文件夹
+     * @param fileName   要删除的文件
      */
     @DeleteMapping("")
     public FileOperationResponse delete(@RequestParam String folderName, @RequestParam String fileName) {
@@ -131,6 +140,8 @@ public class FileOperationController {
 
     /**
      * 修改系统中的文件名
+     *
+     * @param fileInformation 文件信息
      */
     @PutMapping("")
     public FileOperationResponse updateFile(@RequestBody FileInformation fileInformation) {
@@ -170,6 +181,9 @@ public class FileOperationController {
 
     /**
      * 下载系统中的文件
+     *
+     * @param folderName 被下载的目标子文件夹
+     * @param fileName   被下载的文件
      */
     @GetMapping("/download")
     public FileOperationResponse download(@RequestParam String folderName, @RequestParam String fileName) {
@@ -222,6 +236,12 @@ public class FileOperationController {
         return fileOperationMessage;
     }
 
+    /**
+     * 验证文件是否存在
+     *
+     * @param folderName 文件的文件夹名
+     * @param fileName 文件名
+     */
     @GetMapping("")
     public FileOperationResponse getFile(@RequestParam String folderName, @RequestParam String fileName) {
         FileOperationResponse fileOperationMessage = new FileOperationResponse();
