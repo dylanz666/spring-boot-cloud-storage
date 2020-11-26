@@ -197,6 +197,7 @@ import {
   download,
   getFile,
 } from "@/api/file";
+let config = require("../../../config/index");
 
 export default {
   data() {
@@ -306,7 +307,7 @@ export default {
       });
     },
     previewImage(path, fileName) {
-      this.previewSrc = `http://localhost:8080/api/file/download?folderName=${path}&fileName=${fileName}`;
+      this.previewSrc = `http://${config.host}:8080/api/file/download?folderName=${path}&fileName=${fileName}`;
       this.imagePrevieDialogVisible = true;
     },
     upload() {},

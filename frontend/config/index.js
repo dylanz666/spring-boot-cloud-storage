@@ -2,10 +2,12 @@
 // Template version: 1.3.1
 // see http://vuejs-templates.github.io/webpack for documentation.
 
-const path = require('path')
-const backendBaseUrl = 'http://127.0.0.1:8080/';
+const path = require('path');
+const host = "192.168.0.105";
+const backendBaseUrl = `http://${host}:8080/`;
 
 module.exports = {
+  host: host,
   dev: {
 
     // Paths
@@ -36,7 +38,7 @@ module.exports = {
     },
 
     // Various Dev Server settings
-    host: 'localhost', // can be overwritten by process.env.HOST
+    host: host, // can be overwritten by process.env.HOST
     port: 9528, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,

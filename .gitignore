@@ -97,3 +97,4 @@ backend/.idea/libraries/Maven__org_springframework_spring_web_5_2_9_RELEASE.xml
 backend/.idea/libraries/Maven__org_springframework_spring_webmvc_5_2_9_RELEASE.xml
 backend/.idea/libraries/Maven__org_xmlunit_xmlunit_core_2_7_0.xml
 backend/.idea/libraries/Maven__org_yaml_snakeyaml_1_26.xml
+backend/logs/archive/app.2020-11-26.0.log.gz
