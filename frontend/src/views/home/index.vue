@@ -53,6 +53,7 @@
     </el-main>
 
     <el-row>
+      <!-- 交互按钮 -->
       <el-col :span="2" align="right">
         <el-upload
           class="upload-demo"
@@ -84,6 +85,7 @@
         <el-button size="medium" @click="toggleSelection()">取消选择</el-button>
       </el-col>
 
+      <!-- 搜索入口 -->
       <el-col :span="10" align="right">
         <el-input
           placeholder="输入关键字搜索"
@@ -96,12 +98,14 @@
       </el-col>
     </el-row>
 
+    <!-- 文件/文件夹列表 -->
     <el-table
       ref="multipleTable"
       :data="tableData"
       tooltip-effect="dark"
       style="width: 95%"
       @selection-change="handleSelectionChange"
+      v-loading="tableLoading"
     >
       <el-table-column type="selection" width="55" :selectable="isSelectable">
       </el-table-column>
@@ -110,8 +114,7 @@
           <el-link
             v-if="scope.row.type == 'folder'"
             icon="el-icon-folder"
-            href="https://element.eleme.io"
-            target="_blank"
+            @click="hitFolder(scope.row.path)"
             >{{ scope.row.name }}</el-link
           >
           <el-link
@@ -124,7 +127,7 @@
           <el-link
             v-if="scope.row.type == 'image'"
             icon="el-icon-picture"
-            href="https://element.eleme.io"
+            @click="previewImage(scope.row.path, scope.row.name)"
             target="_blank"
             >{{ scope.row.name }}</el-link
           >
@@ -146,13 +149,54 @@
       </el-table-column>
       <el-table-column prop="size" label="大小" width="200"> </el-table-column>
       <el-table-column prop="date" label="修改日期" show-overflow-tooltip>
-      </el-table-column>
-    </el-table>
+      </el-table-column> </el-table
+    ><br />
+
+    <el-dialog
+      title="图片预览"
+      :visible.sync="imagePrevieDialogVisible"
+      v-loading="imagePrevieDialogLoading"
+      width="50%"
+      center
+    >
+      <span slot="footer" class="dialog-footer">
+        <div class="block">
+          <el-image
+            :src="previewSrc"
+            @load="imagePrevieDialogLoading = false"
+          ></el-image>
+        </div>
+      </span>
+    </el-dialog>
+
+    <el-button-group>
+      <el-button type="primary" icon="el-icon-arrow-left" @click="lastFolder"
+        >上一级</el-button
+      >
+      <el-button type="primary" icon="el-icon-arrow-share"
+        >当前目录:{{ currentFolder }}</el-button
+      >
+    </el-button-group>
   </div>
 </template>
 
 <script>
 import { getAuth, logout } from "@/api/auth";
+import {
+  createFolder,
+  deleteFolder,
+  updateFolder,
+  getFolder,
+  getFiles,
+} from "@/api/folder";
+import {
+  upload,
+  uploadFiles,
+  deleteFile,
+  updateFile,
+  download,
+  getFile,
+} from "@/api/file";
 
 export default {
   data() {
@@ -160,50 +204,18 @@ export default {
       username: "",
       userRoles: [],
       currentUserRole: "",
-      space: "573M/100G",
+      space: "104G/138G",
       searchText: "",
       fileList: [],
-      tableData: [
-        {
-          name: "folder 1",
-          path: "/test/2/",
-          size: "500 KB",
-          date: "2016-05-08",
-          type: "folder",
-        },
-        {
-          name: "1.txt",
-          path: "/test/2/",
-          size: "500 KB",
-          date: "2016-05-06",
-          type: "file",
-        },
-        {
-          name: "2.png",
-          path: "/test/2/",
-          size: "500 KB",
-          date: "2016-05-07",
-          type: "image",
-        },
-        {
-          name: "3.mp4",
-          path: "/test/2/",
-          size: "10 MB",
-          date: "2016-05-07",
-          type: "video",
-        },
-        {
-          name: "4.wma",
-          path: "/test/2/",
-          size: "1 MB",
-          date: "2016-05-07",
-          type: "audio",
-        },
-      ],
+      tableData: [],
+      tableLoading: true,
       multipleSelection: [],
+      currentFolder: "/",
+      imagePrevieDialogVisible: false,
+      imagePrevieDialogLoading: true,
+      previewSrc: "",
     };
   },
-
   created() {
     getAuth().then((response) => {
       if (response.code == 200 && response.message == "success") {
@@ -212,6 +224,11 @@ export default {
         this.currentUserRole = this.userRoles[0]
           ? this.userRoles[0].substring(5, this.userRoles[0].length)
           : "";
+
+        getFiles("/").then((response) => {
+          this.tableData = response.files;
+          this.tableLoading = false;
+        });
       }
     });
   },
@@ -262,6 +279,42 @@ export default {
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
+    hitFolder(path) {
+      this.tableLoading = true;
+      this.currentFolder = path;
+      getFiles(path).then((response) => {
+        this.tableData = response.files;
+        this.tableLoading = false;
+      });
+    },
+    lastFolder() {
+      if (this.currentFolder == "/") {
+        this.$message({
+          message: "当前已在根目录",
+          type: "warning",
+        });
+      }
+      let folders = this.currentFolder.split("/");
+      let last = folders.splice(0, folders.length - 1);
+      last = last == "" ? "/" : last.join("/");
+
+      this.tableLoading = true;
+      this.currentFolder = last;
+      getFiles(last).then((response) => {
+        this.tableData = response.files;
+        this.tableLoading = false;
+      });
+    },
+    previewImage(path, fileName) {
+      this.previewSrc = `http://localhost:8080/api/file/download?folderName=${path}&fileName=${fileName}`;
+      this.imagePrevieDialogVisible = true;
+    },
+    upload() {},
+    downloadFiles() {},
+    deleteFiles() {},
+    newFolder() {},
+    deleteFolder() {},
+    search() {},
   },
 };
 </script>
