@@ -126,6 +126,7 @@
       :data="tableData"
       tooltip-effect="dark"
       style="width: 95%"
+      height="400"
       @selection-change="selectContent"
       v-loading="tableLoading"
     >
