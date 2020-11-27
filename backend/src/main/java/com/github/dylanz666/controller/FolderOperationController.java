@@ -65,13 +65,13 @@ public class FolderOperationController {
         try {
             if (!folder.exists()) {
                 folderOperationResponse.setStatus(APIStatus.FAIL.toString());
-                folderOperationResponse.setMessage("The folder is not exist.");
+                folderOperationResponse.setMessage("文件夹不存在");
                 folderOperationResponse.setFolderName(folderName);
                 return folderOperationResponse;
             }
             if (!folder.isDirectory()) {
                 folderOperationResponse.setStatus(APIStatus.FAIL.toString());
-                folderOperationResponse.setMessage("This is not a folder.");
+                folderOperationResponse.setMessage("非文件夹");
                 folderOperationResponse.setFolderName(folderName);
                 return folderOperationResponse;
             }
@@ -217,7 +217,7 @@ public class FolderOperationController {
                     continue;
                 }
                 singleFileItem.put("path", folderName);
-                singleFileItem.put("size", sub.length() / 1000);
+                singleFileItem.put("size", sub.length() / 1000 + " kb");
                 if (subName.endsWith(".jpg") || subName.endsWith(".jpeg") || subName.endsWith(".png") || subName.endsWith(".bmp") || subName.endsWith(".ico") || subName.endsWith(".psd") || subName.endsWith(".psb") || subName.endsWith(".gif")) {
                     singleFileItem.put("type", "image");
                     list.add(singleFileItem);

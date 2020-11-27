@@ -1,25 +1,33 @@
 import request from '@/utils/request'
 
-export function upload() {
-
+export function deleteFiles(files) {
+    return request({
+        url: '/api/file/batch',
+        method: 'delete',
+        data: files
+    });
 }
 
-export function uploadFiles() {
-
+export function updateFile(folderName, currentFileName, targetFileName) {
+    return request({
+        url: '/api/file',
+        method: 'put',
+        data: { folderName, currentFileName, targetFileName }
+    });
 }
 
-export function deleteFile() {
-
+export function download(folderName, fileName) {
+    return request({
+        url: '/api/file/download',
+        method: 'get',
+        params: { folderName, fileName }
+    });
 }
 
-export function updateFile() {
-
-}
-
-export function download() {
-
-}
-
-export function getFile() {
-
+export function getFile(folderName, fileName) {
+    return request({
+        url: '/api/file',
+        method: 'get',
+        params: { folderName, fileName }
+    });
 }

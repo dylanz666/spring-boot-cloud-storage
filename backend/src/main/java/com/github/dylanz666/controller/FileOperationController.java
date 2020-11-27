@@ -1,5 +1,6 @@
 package com.github.dylanz666.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.github.dylanz666.constant.APIStatus;
 import com.github.dylanz666.domain.FileInformation;
 import com.github.dylanz666.domain.FileOperationResponse;
@@ -139,6 +140,51 @@ public class FileOperationController {
     }
 
     /**
+     * 批量删除系统中的文件
+     *
+     * @param files 要删除的文件
+     */
+    @DeleteMapping("/batch")
+    public FileOperationResponse deleteFiles(@RequestBody JSONArray files) {
+        FileOperationResponse fileOperationMessage = new FileOperationResponse();
+        if (files.size() == 0) {
+            fileOperationMessage.setStatus(APIStatus.FAIL.toString());
+            fileOperationMessage.setMessage("请选择要删除的文件");
+            return fileOperationMessage;
+        }
+
+        int successQuantity = 0;
+        int failQuantity = 0;
+        String folderName = files.getJSONObject(0).getString("path");
+        for (int i = 0; i < files.size(); i++) {
+            String fileName = files.getJSONObject(i).getString("name");
+            File file = new File(rootDir, folderName + "\\" + fileName);
+            try {
+                if (file.exists()) {
+                    file.delete();
+                    successQuantity += 1;
+                    continue;
+                }
+                failQuantity += 1;
+            } catch (Exception e) {
+                e.printStackTrace();
+                failQuantity += 1;
+            }
+        }
+        if (failQuantity == 0 && successQuantity > 0) {
+            fileOperationMessage.setStatus(APIStatus.SUCCESS.toString());
+            fileOperationMessage.setMessage(APIStatus.SUCCESS.toString());
+            fileOperationMessage.setFolderName(folderName);
+        }
+        if (failQuantity > 0) {
+            fileOperationMessage.setStatus(APIStatus.FAIL.toString());
+            fileOperationMessage.setMessage("删除成功：" + successQuantity + ",删除失败：" + failQuantity);
+            fileOperationMessage.setFolderName(folderName);
+        }
+        return fileOperationMessage;
+    }
+
+    /**
      * 修改系统中的文件名
      *
      * @param fileInformation 文件信息
@@ -240,7 +286,7 @@ public class FileOperationController {
      * 验证文件是否存在
      *
      * @param folderName 文件的文件夹名
-     * @param fileName 文件名
+     * @param fileName   文件名
      */
     @GetMapping("")
     public FileOperationResponse getFile(@RequestParam String folderName, @RequestParam String fileName) {
