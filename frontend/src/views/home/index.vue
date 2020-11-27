@@ -305,8 +305,8 @@ export default {
         this.uploadParams = {
           folderName: "/",
         };
-        getSpaceInfo().then(response=>{
-          this.space=response.message;
+        getSpaceInfo().then((response) => {
+          this.space = response.message;
         });
       }
     });
@@ -446,10 +446,6 @@ export default {
         }
       )
         .then(() => {
-          this.$message({
-            message: this.currentFolder,
-            type: "success",
-          });
           deleteFiles(this.selectedContent).then((response) => {
             if (response.message == "SUCCESS") {
               this.$message({

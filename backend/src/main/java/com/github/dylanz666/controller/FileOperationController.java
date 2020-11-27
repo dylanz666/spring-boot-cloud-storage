@@ -2,6 +2,7 @@ package com.github.dylanz666.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.github.dylanz666.constant.APIStatus;
+import com.github.dylanz666.domain.FileDetail;
 import com.github.dylanz666.domain.FileInformation;
 import com.github.dylanz666.domain.FileOperationResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -145,9 +146,9 @@ public class FileOperationController {
      * @param files 要删除的文件
      */
     @DeleteMapping("/batch")
-    public FileOperationResponse deleteFiles(@RequestBody JSONArray files) {
+    public FileOperationResponse deleteFiles(@RequestBody FileDetail[] files) {
         FileOperationResponse fileOperationMessage = new FileOperationResponse();
-        if (files.size() == 0) {
+        if (files.length == 0) {
             fileOperationMessage.setStatus(APIStatus.FAIL.toString());
             fileOperationMessage.setMessage("请选择要删除的文件");
             return fileOperationMessage;
@@ -155,9 +156,11 @@ public class FileOperationController {
 
         int successQuantity = 0;
         int failQuantity = 0;
-        String folderName = files.getJSONObject(0).getString("path");
-        for (int i = 0; i < files.size(); i++) {
-            String fileName = files.getJSONObject(i).getString("name");
+        FileDetail file1 = files[0];
+        String folderName = file1.getPath();
+        for (int i = 0; i < files.length; i++) {
+            FileDetail fileDetail = files[i];
+            String fileName = fileDetail.getName();
             File file = new File(rootDir, folderName + "\\" + fileName);
             try {
                 if (file.exists()) {

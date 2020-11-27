@@ -4,7 +4,7 @@ export function deleteFiles(files) {
     return request({
         url: '/api/file/batch',
         method: 'delete',
-        data: { files }
+        data: files
     });
 }
 
