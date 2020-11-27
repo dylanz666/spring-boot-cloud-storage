@@ -33,7 +33,7 @@ public class SpaceController {
             String freeString = (free / 1024 / 1024 / 1024) + "G";
             String totalString = (total / 1024 / 1024 / 1024) + "G";
 
-            String message = freeString + "/" + totalString;
+            String message = "可用容量：" + freeString + " 总容量：" + totalString;
 
             folderOperationResponse.setStatus(APIStatus.SUCCESS.toString());
             folderOperationResponse.setMessage(message);

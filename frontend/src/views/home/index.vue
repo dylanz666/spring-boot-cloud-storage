@@ -2,21 +2,17 @@
   <div>
     <el-main>
       <el-row>
-        <el-col :span="5" align="left">
-          <div style="font-family: 微软雅黑">MAGIC云盘 - {{ space }}</div>
-        </el-col>
-
-        <el-col :span="15" style="margin-top: -10px" align="right">
+        <el-col :span="9" style="margin-top: -10px" align="right">
           <!-- 当前角色 -->
           <el-button
             type="text"
             icon="el-icon-user-solid"
-            disabled
             size="medium"
+            @click="showSpaceInfo"
             >{{ username }}({{ currentUserRole }})</el-button
           >
         </el-col>
-        <el-col :span="2" style="margin-top: -10px">
+        <el-col :span="6" style="margin-top: -10px">
           <!-- 登出 -->
           <el-button
             type="text"
@@ -27,7 +23,7 @@
           >
         </el-col>
 
-        <el-col :span="2" style="margin-top: -10px">
+        <el-col :span="9" style="margin-top: -10px">
           <!-- 角色下拉框 -->
           <el-dropdown @command="changeRole">
             <span class="el-dropdown-link">
@@ -52,9 +48,9 @@
       <hr />
     </el-main>
 
+    <!-- 交互按钮 -->
     <el-row>
-      <!-- 交互按钮 -->
-      <el-col :span="2" align="right">
+      <el-col :span="6">
         <el-upload
           class="upload-demo"
           ref="upload"
@@ -74,27 +70,30 @@
           >
         </el-upload>
       </el-col>
-      <el-col :span="2" align="center">
+      <el-col :span="6">
         <el-button type="success" size="medium" @click="downloadFile"
           >下载文件</el-button
         >
       </el-col>
-      <el-col :span="2" align="left">
+      <el-col :span="6">
         <el-button type="danger" size="medium" @click="deleteFiles"
           >删除文件</el-button
         >
       </el-col>
-      <el-col :span="2" align="left">
+      <el-col :span="6">
         <el-button type="primary" size="medium" @click="renameFile"
           >重命名</el-button
         >
       </el-col>
-      <el-col :span="2" align="center">
+    </el-row>
+
+    <el-row>
+      <el-col :span="7">
         <el-button size="medium" @click="createFolderDialogVisible = true"
           >新建文件夹</el-button
         >
       </el-col>
-      <el-col :span="2" align="right">
+      <el-col :span="7">
         <el-button
           type="danger"
           size="medium"
@@ -103,22 +102,21 @@
           >删除文件夹</el-button
         >
       </el-col>
-      <el-col :span="2" align="center">
+      <el-col :span="6">
         <el-button size="medium" @click="toggleSelection()">取消选择</el-button>
       </el-col>
-
-      <!-- 搜索入口 -->
-      <el-col :span="10" align="right">
-        <el-input
-          placeholder="输入关键字搜索"
-          v-model="searchText"
-          class="input-with-select"
-          clearable=""
-        >
-          <el-button slot="append" icon="el-icon-search"></el-button>
-        </el-input>
-      </el-col>
+      <el-col :span="4"> </el-col>
     </el-row>
+
+    <!-- 搜索入口 -->
+    <el-input
+      placeholder="输入关键字搜索"
+      v-model="searchText"
+      class="input-with-select"
+      clearable=""
+    >
+      <el-button slot="append" icon="el-icon-search"></el-button>
+    </el-input>
 
     <!-- 文件/文件夹列表 -->
     <el-table
@@ -126,7 +124,7 @@
       :data="tableData"
       tooltip-effect="dark"
       style="width: 95%"
-      height="400"
+      height="300"
       @selection-change="selectContent"
       v-loading="tableLoading"
     >
@@ -259,6 +257,7 @@ import {
   download,
   getFile,
 } from "@/api/file";
+import { getSpaceInfo } from "@/api/space";
 let config = require("../../../config/index");
 
 export default {
@@ -267,7 +266,7 @@ export default {
       username: "",
       userRoles: [],
       currentUserRole: "",
-      space: "104G/138G",
+      space: "",
       searchText: "",
       fileList: [],
       tableData: [],
@@ -306,6 +305,9 @@ export default {
         this.uploadParams = {
           folderName: "/",
         };
+        getSpaceInfo().then(response=>{
+          this.space=response.message;
+        });
       }
     });
   },
@@ -444,6 +446,10 @@ export default {
         }
       )
         .then(() => {
+          this.$message({
+            message: this.currentFolder,
+            type: "success",
+          });
           deleteFiles(this.selectedContent).then((response) => {
             if (response.message == "SUCCESS") {
               this.$message({
@@ -620,6 +626,11 @@ export default {
             message: errorMessage,
           });
         });
+    },
+    showSpaceInfo() {
+      this.$alert(this.space, "MAGIC容量信息", {
+        center: true,
+      });
     },
     search() {},
   },
