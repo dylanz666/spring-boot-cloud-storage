@@ -76,7 +76,7 @@
         >
       </el-col>
       <el-col :span="6">
-        <el-button type="danger" size="medium" @click="deleteFiles"
+        <el-button type="danger" size="medium" @click="deleteSelectedFiles"
           >删除文件</el-button
         >
       </el-col>
@@ -205,7 +205,7 @@
     <el-dialog
       title="新建文件夹"
       :visible.sync="createFolderDialogVisible"
-      width="30%"
+      width="70%"
       center
     >
       <el-input placeholder="请输入文件夹名" v-model="newFolderName" clearable>
@@ -220,7 +220,7 @@
     <el-dialog
       title="删除文件夹"
       :visible.sync="deleteFolderDialogVisible"
-      width="30%"
+      width="70%"
       center
     >
       <el-select v-model="targetDeleteFolder" placeholder="请选择文件夹">
@@ -428,7 +428,7 @@ export default {
         });
       });
     },
-    deleteFiles() {
+    deleteSelectedFiles() {
       if (this.selectedContent.length == 0) {
         this.$message({
           message: "请选择要删除的文件",

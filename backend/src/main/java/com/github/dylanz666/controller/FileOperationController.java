@@ -6,6 +6,7 @@ import com.github.dylanz666.domain.FileDetail;
 import com.github.dylanz666.domain.FileInformation;
 import com.github.dylanz666.domain.FileOperationResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -145,7 +146,7 @@ public class FileOperationController {
      *
      * @param files 要删除的文件
      */
-    @DeleteMapping("/batch")
+    @PostMapping("/batchDelete")
     public FileOperationResponse deleteFiles(@RequestBody FileDetail[] files) {
         FileOperationResponse fileOperationMessage = new FileOperationResponse();
         if (files.length == 0) {

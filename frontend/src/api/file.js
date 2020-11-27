@@ -2,8 +2,8 @@ import request from '@/utils/request'
 
 export function deleteFiles(files) {
     return request({
-        url: '/api/file/batch',
-        method: 'delete',
+        url: '/api/file/batchDelete',
+        method: 'post',
         data: files
     });
 }
