@@ -178,7 +178,7 @@
       title="图片预览"
       :visible.sync="imagePrevieDialogVisible"
       v-loading="imagePrevieDialogLoading"
-      width="50%"
+      width="80%"
       center
     >
       <span slot="footer" class="dialog-footer">
@@ -195,7 +195,7 @@
       <el-button type="primary" icon="el-icon-arrow-left" @click="lastFolder"
         >上一级</el-button
       >
-      <el-button type="primary" icon="el-icon-arrow-share"
+      <el-button type="primary" icon="el-icon-arrow-share" @click="refreshTable"
         >当前目录:{{ currentFolder }}</el-button
       >
     </el-button-group>
