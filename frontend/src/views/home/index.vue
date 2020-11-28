@@ -141,28 +141,28 @@
           <el-link
             v-if="scope.row.type == 'file'"
             icon="el-icon-document"
-            href="https://element.eleme.io"
+            @click="preview(scope.row.type, scope.row.path, scope.row.name)"
             target="_blank"
             >{{ scope.row.name }}</el-link
           >
           <el-link
             v-if="scope.row.type == 'image'"
             icon="el-icon-picture"
-            @click="previewImage(scope.row.path, scope.row.name)"
+            @click="preview(scope.row.type, scope.row.path, scope.row.name)"
             target="_blank"
             >{{ scope.row.name }}</el-link
           >
           <el-link
             v-if="scope.row.type == 'video'"
             icon="el-icon-video-play"
-            href="https://element.eleme.io"
+            @click="preview(scope.row.type, scope.row.path, scope.row.name)"
             target="_blank"
             >{{ scope.row.name }}</el-link
           >
           <el-link
             v-if="scope.row.type == 'audio'"
             icon="el-icon-headset"
-            href="https://element.eleme.io"
+            @click="preview(scope.row.type, scope.row.path, scope.row.name)"
             target="_blank"
             >{{ scope.row.name }}</el-link
           >
@@ -393,9 +393,16 @@ export default {
         });
       });
     },
-    previewImage(path, fileName) {
-      this.previewSrc = `http://${config.host}:8080/api/file/download?folderName=${path}&fileName=${fileName}`;
-      this.imagePrevieDialogVisible = true;
+    preview(type, path, fileName) {
+      if (type == "image") {
+        this.previewSrc = `http://${config.host}:8080/api/file/download?folderName=${path}&fileName=${fileName}`;
+        this.imagePrevieDialogVisible = true;
+        return;
+      }
+      this.$message({
+        message: "对不起，仅支持预览图片",
+        type: "warn",
+      });
     },
     clearUploadFileList() {
       this.$refs.upload.clearFiles();
