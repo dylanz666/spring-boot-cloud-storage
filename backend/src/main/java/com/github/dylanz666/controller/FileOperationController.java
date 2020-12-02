@@ -1,12 +1,12 @@
 package com.github.dylanz666.controller;
 
-import com.alibaba.fastjson.JSONArray;
 import com.github.dylanz666.constant.APIStatus;
 import com.github.dylanz666.domain.FileDetail;
 import com.github.dylanz666.domain.FileInformation;
 import com.github.dylanz666.domain.FileOperationResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -42,11 +42,15 @@ public class FileOperationController {
      */
     @PostMapping("")
     public FileOperationResponse upload(@RequestParam String folderName, @RequestParam("file") MultipartFile file) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        String root = rootDir + username;
+
         FileOperationResponse fileOperationMessage = new FileOperationResponse();
         String fileName = file.getOriginalFilename();
         assert fileName != null;
         try {
-            File dest = new File(rootDir, folderName + "\\" + fileName);
+            File dest = new File(root, folderName + "\\" + fileName);
 
             //当文件父文件夹不存在，则创建该文件夹
             if (!dest.getParentFile().exists()) {
@@ -77,6 +81,10 @@ public class FileOperationController {
      */
     @PostMapping("/batch")
     public FileOperationResponse uploadFiles(@RequestParam String folderName, @RequestParam("file") List<MultipartFile> files) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        String root = rootDir + username;
+
         FileOperationResponse fileOperationMessage = new FileOperationResponse();
 
         StringBuilder responseFileName = new StringBuilder();
@@ -85,7 +93,7 @@ public class FileOperationController {
             assert fileName != null;
             responseFileName.append(fileName).append(";");
             try {
-                File dest = new File(rootDir, folderName + "\\" + fileName);
+                File dest = new File(root, folderName + "\\" + fileName);
                 //当文件父文件夹不存在，则创建该文件夹
                 if (!dest.getParentFile().exists()) {
                     dest.getParentFile().mkdir();
@@ -116,8 +124,12 @@ public class FileOperationController {
      */
     @DeleteMapping("")
     public FileOperationResponse delete(@RequestParam String folderName, @RequestParam String fileName) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        String root = rootDir + username;
+
         FileOperationResponse fileOperationMessage = new FileOperationResponse();
-        File file = new File(rootDir, folderName + "\\" + fileName);
+        File file = new File(root, folderName + "\\" + fileName);
         try {
             if (file.exists()) {
                 file.delete();
@@ -148,6 +160,10 @@ public class FileOperationController {
      */
     @PostMapping("/batchDelete")
     public FileOperationResponse deleteFiles(@RequestBody FileDetail[] files) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        String root = rootDir + username;
+
         FileOperationResponse fileOperationMessage = new FileOperationResponse();
         if (files.length == 0) {
             fileOperationMessage.setStatus(APIStatus.FAIL.toString());
@@ -162,7 +178,7 @@ public class FileOperationController {
         for (int i = 0; i < files.length; i++) {
             FileDetail fileDetail = files[i];
             String fileName = fileDetail.getName();
-            File file = new File(rootDir, folderName + "\\" + fileName);
+            File file = new File(root, folderName + "\\" + fileName);
             try {
                 if (file.exists()) {
                     file.delete();
@@ -195,8 +211,12 @@ public class FileOperationController {
      */
     @PutMapping("")
     public FileOperationResponse updateFile(@RequestBody FileInformation fileInformation) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        String root = rootDir + username;
+
         FileOperationResponse fileOperationMessage = new FileOperationResponse();
-        String folder = rootDir + "\\" + fileInformation.getFolderName();
+        String folder = root + "\\" + fileInformation.getFolderName();
         String currentFileName = fileInformation.getCurrentFileName();
         String targetFileName = fileInformation.getTargetFileName();
 
@@ -237,8 +257,12 @@ public class FileOperationController {
      */
     @GetMapping("/download")
     public FileOperationResponse download(@RequestParam String folderName, @RequestParam String fileName) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        String root = rootDir + username;
+
         FileOperationResponse fileOperationMessage = new FileOperationResponse();
-        String folder = rootDir + "\\" + folderName;
+        String folder = root + "\\" + folderName;
         try {
             File file = new File(folder, fileName);
 
@@ -294,8 +318,12 @@ public class FileOperationController {
      */
     @GetMapping("")
     public FileOperationResponse getFile(@RequestParam String folderName, @RequestParam String fileName) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        String root = rootDir + username;
+
         FileOperationResponse fileOperationMessage = new FileOperationResponse();
-        String folder = rootDir + "\\" + folderName;
+        String folder = root + "\\" + folderName;
         try {
             File file = new File(folder, fileName);
             if (!file.exists()) {

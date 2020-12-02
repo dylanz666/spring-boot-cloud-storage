@@ -48,72 +48,21 @@
       <hr />
     </el-main>
 
-    <!-- 交互按钮 -->
-    <el-row>
-      <el-col :span="6">
-        <el-upload
-          class="upload-demo"
-          ref="upload"
-          action="/api/file"
-          :data="uploadParams"
-          :on-success="refreshTable"
-          :file-list="fileList"
-          :auto-upload="true"
-          multiple
-        >
-          <el-button
-            slot="trigger"
-            size="medium"
-            type="primary"
-            @click="clearUploadFileList"
-            >上传文件</el-button
-          >
-        </el-upload>
-      </el-col>
-      <el-col :span="6">
-        <el-button type="success" size="medium" @click="downloadFile"
-          >下载文件</el-button
-        >
-      </el-col>
-      <el-col :span="6">
-        <el-button type="danger" size="medium" @click="deleteSelectedFiles"
-          >删除文件</el-button
-        >
-      </el-col>
-      <el-col :span="6">
-        <el-button type="primary" size="medium" @click="renameFile"
-          >重命名</el-button
-        >
-      </el-col>
-    </el-row>
-
-    <el-row>
-      <el-col :span="7">
-        <el-button size="medium" @click="createFolderDialogVisible = true"
-          >新建文件夹</el-button
-        >
-      </el-col>
-      <el-col :span="7">
-        <el-button
-          type="danger"
-          size="medium"
-          plain
-          @click="openDeleteFolderDialog"
-          >删除文件夹</el-button
-        >
-      </el-col>
-      <el-col :span="6">
-        <el-button size="medium" @click="toggleSelection()">取消选择</el-button>
-      </el-col>
-      <el-col :span="4"> </el-col>
-    </el-row>
+    <div style="height: 35px">
+      <el-page-header
+        @back="lastFolder"
+        :content="
+          '当前目录：' + currentFolder + ' ;已选：' + selectedContent.length
+        "
+      >
+      </el-page-header>
+    </div>
 
     <!-- 搜索入口 -->
     <el-input
-      placeholder="输入关键字搜索"
+      placeholder="请输入内容"
       v-model="searchText"
       class="input-with-select"
-      clearable=""
     >
       <el-button slot="append" icon="el-icon-search"></el-button>
     </el-input>
@@ -124,20 +73,21 @@
       :data="tableData"
       tooltip-effect="dark"
       style="width: 95%"
-      height="300"
+      height="350"
       @selection-change="selectContent"
       v-loading="tableLoading"
     >
       <el-table-column type="selection" width="55" :selectable="isSelectable">
       </el-table-column>
-      <el-table-column label="内容" width="800">
+      <el-table-column label="内容">
         <template slot-scope="scope">
           <el-link
             v-if="scope.row.type == 'folder'"
             icon="el-icon-folder"
             @click="hitFolder(scope.row.path)"
-            >{{ scope.row.name }}</el-link
-          >
+            >{{ scope.row.name }}
+          </el-link>
+
           <el-link
             v-if="scope.row.type == 'file'"
             icon="el-icon-document"
@@ -164,14 +114,17 @@
             icon="el-icon-headset"
             @click="preview(scope.row.type, scope.row.path, scope.row.name)"
             target="_blank"
-            >{{ scope.row.name }}</el-link
-          >
+            >{{ scope.row.name }}
+          </el-link>
         </template>
       </el-table-column>
-      <el-table-column prop="size" label="大小" width="200"> </el-table-column>
-      <el-table-column prop="date" label="修改日期" show-overflow-tooltip>
-      </el-table-column> </el-table
-    ><br />
+      <el-table-column label="日期">
+        <template slot-scope="scope">
+          {{ scope.row.date }}</template
+        ></el-table-column
+      >
+    </el-table>
+    <br />
 
     <!-- 图片预览 -->
     <el-dialog
@@ -192,14 +145,16 @@
     </el-dialog>
 
     <el-button-group>
-      <el-button type="primary" icon="el-icon-arrow-left" @click="lastFolder"
-        >上一级</el-button
+      <el-button
+        type="primary"
+        icon="el-icon-s-operation"
+        @click="drawerVisible = true"
+        >操作</el-button
       >
-      <el-button type="primary" icon="el-icon-arrow-share" @click="refreshTable"
-        >当前目录:{{ currentFolder }}</el-button
+      <el-button type="primary" icon="el-icon-refresh" @click="refreshTable"
+        >刷新</el-button
       >
     </el-button-group>
-    <el-button type="success" @click="refresh">刷新页面</el-button>
 
     <!-- 新建文件夹 -->
     <el-dialog
@@ -237,6 +192,68 @@
         <el-button type="primary" @click="deleteFolder">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 交互按钮 -->
+    <el-drawer
+      title="操作"
+      :visible.sync="drawerVisible"
+      :direction="rtl"
+      :before-close="handleClose"
+      size="60%"
+    >
+      <div align="left">
+        <el-divider content-position="center">文件夹操作</el-divider>
+        <el-button
+          size="medium"
+          @click="createFolderDialogVisible = true"
+          type="success"
+          >建文件夹</el-button
+        >
+        <el-button type="danger" size="medium" @click="openDeleteFolderDialog"
+          >删文件夹</el-button
+        >
+        <br />
+
+        <el-divider content-position="center">文件操作</el-divider>
+        <el-button type="success" size="medium" @click="downloadFile"
+          >下载文件</el-button
+        >
+
+        <el-button type="danger" size="medium" @click="deleteSelectedFiles"
+          >删除文件</el-button
+        >
+
+        <br /><br />
+        <el-button type="success" size="medium" @click="renameFile"
+          >移动位置</el-button
+        >
+        <el-button type="danger" size="medium" @click="renameFile"
+          >重新命名</el-button
+        >
+
+        <br /><br />
+        <el-upload
+          class="upload-demo"
+          ref="upload"
+          action="/api/file"
+          :data="uploadParams"
+          :file-list="fileList"
+          list-type="picture"
+          :show-file-list="true"
+          :auto-upload="true"
+          :on-success="handleOnSuccess"
+          multiple
+        >
+          <el-button
+            slot="trigger"
+            size="medium"
+            type="success"
+            @click="clearUploadFileList"
+            >上传文件</el-button
+          >
+        </el-upload>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -281,6 +298,8 @@ export default {
       newFileName: "",
       renameFileDialogVisible: false,
       deleteFolderDialogVisible: false,
+      operationDialogVisible: false,
+      drawerVisible: false,
       targetDeleteFolders: [],
       targetDeleteFolder: "",
       uploadParams: {},
@@ -342,15 +361,6 @@ export default {
         return false;
       }
       return true;
-    },
-    toggleSelection(rows) {
-      if (rows) {
-        rows.forEach((row) => {
-          this.$refs.multipleTable.toggleRowSelection(row);
-        });
-      } else {
-        this.$refs.multipleTable.clearSelection();
-      }
     },
     selectContent(content) {
       this.selectedContent = content;
@@ -636,6 +646,24 @@ export default {
       });
     },
     search() {},
+    submitUpload() {
+      this.$refs.upload.submit();
+      this.tableLoading = true;
+      getFiles(this.currentFolder).then((response) => {
+        this.tableData = response.files;
+        this.tableLoading = false;
+        this.targetDeleteFolders = response.files.filter((item) => {
+          return item.type == "folder";
+        });
+      });
+    },
+    handleOnSuccess(response, file, fileList) {
+      const uploadFiles = this.$refs.upload.uploadFiles;
+      let index = uploadFiles.findIndex((item) => {
+        return item.uid == file.uid;
+      });
+      fileList.splice(index, 1);
+    }
   },
 };
 </script>

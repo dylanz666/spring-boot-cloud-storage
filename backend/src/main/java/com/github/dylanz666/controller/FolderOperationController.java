@@ -6,11 +6,12 @@ import com.github.dylanz666.constant.APIStatus;
 import com.github.dylanz666.domain.FolderInformation;
 import com.github.dylanz666.domain.FolderOperationResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author : dylanz
@@ -29,8 +30,12 @@ public class FolderOperationController {
      */
     @PostMapping("")
     public FolderOperationResponse createFolder(@RequestParam String folderName) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        String root = rootDir + username;
+
         FolderOperationResponse folderOperationResponse = new FolderOperationResponse();
-        File newFolder = new File(rootDir, folderName);
+        File newFolder = new File(root, folderName);
         try {
             if (newFolder.exists()) {
                 folderOperationResponse.setStatus(APIStatus.FAIL.toString());
@@ -59,8 +64,12 @@ public class FolderOperationController {
      */
     @DeleteMapping("")
     public FolderOperationResponse deleteFolder(@RequestParam String folderName, @RequestParam String all) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        String root = rootDir + username;
+
         FolderOperationResponse folderOperationResponse = new FolderOperationResponse();
-        File folder = new File(rootDir, folderName);
+        File folder = new File(root, folderName);
 
         try {
             if (!folder.exists()) {
@@ -76,7 +85,7 @@ public class FolderOperationController {
                 return folderOperationResponse;
             }
             if (all.equalsIgnoreCase("Y") || all.equalsIgnoreCase("yes") || all.equalsIgnoreCase("true")) {
-                deleteFolder(rootDir + "\\" + folderName);
+                deleteFolder(root + "\\" + folderName);
                 folderOperationResponse.setStatus(APIStatus.SUCCESS.toString());
                 folderOperationResponse.setMessage(APIStatus.SUCCESS.toString());
                 folderOperationResponse.setFolderName(folderName);
@@ -109,12 +118,16 @@ public class FolderOperationController {
      */
     @PutMapping("")
     public FolderOperationResponse updateFolder(@RequestBody FolderInformation folderInformation) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        String root = rootDir + username;
+
         FolderOperationResponse folderOperationResponse = new FolderOperationResponse();
         String currentFolderName = folderInformation.getCurrentFolderName();
         String targetFolderName = folderInformation.getTargetFolderName();
 
-        File currentFolder = new File(rootDir, currentFolderName);
-        File targetFolder = new File(rootDir, targetFolderName);
+        File currentFolder = new File(root, currentFolderName);
+        File targetFolder = new File(root, targetFolderName);
         try {
             if (targetFolder.exists()) {
                 folderOperationResponse.setStatus(APIStatus.FAIL.toString());
@@ -149,8 +162,12 @@ public class FolderOperationController {
      */
     @GetMapping("")
     public FolderOperationResponse getFolder(@RequestParam String folderName) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        String root = rootDir + username;
+
         FolderOperationResponse folderOperationResponse = new FolderOperationResponse();
-        File folder = new File(rootDir, folderName);
+        File folder = new File(root, folderName);
         try {
             if (!folder.exists()) {
                 folderOperationResponse.setStatus(APIStatus.FAIL.toString());
@@ -184,9 +201,13 @@ public class FolderOperationController {
      */
     @GetMapping("/children")
     public FolderOperationResponse getFiles(@RequestParam String folderName, @RequestParam String all) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        String root = rootDir + username;
+
         FolderOperationResponse folderOperationResponse = new FolderOperationResponse();
         try {
-            File folder = new File(rootDir, folderName);
+            File folder = new File(root, folderName);
             if (!folder.exists()) {
                 folderOperationResponse.setStatus(APIStatus.FAIL.toString());
                 folderOperationResponse.setMessage("The folder is not exist.");
@@ -199,7 +220,7 @@ public class FolderOperationController {
             JSONArray list = new JSONArray();
             assert fileList != null;
             for (String item : fileList) {
-                File sub = new File(rootDir, folderName + "\\" + item);
+                File sub = new File(root, folderName + "\\" + item);
                 String subName = sub.getName().toLowerCase();
                 Date date = new Date(sub.lastModified());
 
