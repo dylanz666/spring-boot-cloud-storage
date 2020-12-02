@@ -198,7 +198,7 @@
       title="操作"
       :visible.sync="drawerVisible"
       :direction="rtl"
-      :before-close="handleClose"
+      @closed="onDrawerClose"
       size="60%"
     >
       <div align="left">
@@ -224,14 +224,6 @@
         >
 
         <br /><br />
-        <el-button type="success" size="medium" @click="renameFile"
-          >移动位置</el-button
-        >
-        <el-button type="danger" size="medium" @click="renameFile"
-          >重新命名</el-button
-        >
-
-        <br /><br />
         <el-upload
           class="upload-demo"
           ref="upload"
@@ -250,6 +242,13 @@
             type="success"
             @click="clearUploadFileList"
             >上传文件</el-button
+          >
+          <el-button
+            type="danger"
+            size="medium"
+            style="margin-left: 10px"
+            @click="renameFile"
+            >重新命名</el-button
           >
         </el-upload>
       </div>
@@ -663,7 +662,17 @@ export default {
         return item.uid == file.uid;
       });
       fileList.splice(index, 1);
-    }
+    },
+    onDrawerClose() {
+      this.tableLoading = true;
+      getFiles(this.currentFolder).then((response) => {
+        this.tableData = response.files;
+        this.tableLoading = false;
+        this.targetDeleteFolders = response.files.filter((item) => {
+          return item.type == "folder";
+        });
+      });
+    },
   },
 };
 </script>
